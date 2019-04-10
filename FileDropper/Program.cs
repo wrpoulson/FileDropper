@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace FileDropper
 {
@@ -9,13 +10,17 @@ namespace FileDropper
   {
     static void Main(string[] args)
     {
-      DropRandomFiles();
+      Log.Logger = new LoggerConfiguration().WriteTo.File($"{Environment.UserName}.{typeof(Program).Assembly.GetName().Name}.log").CreateLogger();
+      Settings settings = GetSettings();
+      Log.Information($"Settings on launch: {Newtonsoft.Json.JsonConvert.SerializeObject(settings)}");
+
+      DropRandomFiles(settings);
     }
 
-    private static void DropRandomFiles()
+    private static void DropRandomFiles(Settings settings)
     {
       Random rng = new Random();
-      Settings settings = SetupAndGetConfiguration();
+      var filesWritten = 0;
 
       for (var i = 0; i < settings.NumberOfFilesToCreate; i++)
       {
@@ -27,16 +32,28 @@ namespace FileDropper
 
         Directory.CreateDirectory(dropOffDirectory);
 
-        using (var fs = new FileStream(fullFileName, FileMode.Create, FileAccess.Write, FileShare.None))
+        try
         {
-          fs.Write(randomBytes, 0, randomBytes.Length);
+          using (var fs = new FileStream(fullFileName, FileMode.Create, FileAccess.Write, FileShare.None))
+          {
+            fs.Write(randomBytes, 0, randomBytes.Length);
+          }
+          filesWritten++;
+          Log.Information($"Created file: {fullFileName}");
         }
-
+        catch (Exception ex)
+        {
+          Log.Error(ex, "Error writing file.");
+        }
         Thread.Sleep(settings.SleepTimeBetweenDrops); // configurable sleep time for testing different rates of drop off
       }
+
+      bool allFilesCreated = filesWritten == settings.NumberOfFilesToCreate;
+      Log.Information($"File creation complete, {filesWritten} of {settings.NumberOfFilesToCreate} files were created successfully.");
+      if (!allFilesCreated) Log.Information($"Not all files created successfully, please check log for file errors.");
     }
 
-    private static Settings SetupAndGetConfiguration()
+    private static Settings GetSettings()
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
