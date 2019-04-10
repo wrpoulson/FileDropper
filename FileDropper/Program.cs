@@ -27,7 +27,7 @@ namespace FileDropper
         var lCode = RandomLCode(rng); // get random LCode (L001 - L499)
         var randomFileName = GetNewFileName(rng, settings.FileNameBase, lCode); // randomly generate filename formatted $"{settings.FileNameBase}_{some RNG}_{lcode}.txt"
         var randomBytes = GetRandomByteArray(rng, settings.MaxFileSizeInKb); // creates a byte array of a random size ranging from 1KB - MaxFileSizeInKb
-        var dropOffDirectory = Path.Combine(settings.OutputPath, lCode); // drop off is an LCode subdirectory
+        var dropOffDirectory = Path.Combine(settings.OutputPath, string.Format(settings.SubdirectoryPathTemplate, lCode)); // drop off is an LCode subdirectory
         var fullFileName = Path.Combine(dropOffDirectory, randomFileName); 
 
         Directory.CreateDirectory(dropOffDirectory);
@@ -66,6 +66,7 @@ namespace FileDropper
     private class Settings
     {
       public string OutputPath { get; set;}
+      public string SubdirectoryPathTemplate { get; set; }
       public string FileNameBase { get; set;}
       public int SleepTimeBetweenDrops { get; set;}
       public int NumberOfFilesToCreate{ get; set;}
