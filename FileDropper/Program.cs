@@ -11,7 +11,7 @@ namespace FileDropper
     {
       Console.Title = typeof(Program).Assembly.GetName().Name;
       Log.Logger = new LoggerConfiguration().WriteTo.File($"{Environment.UserName}.{typeof(Program).Assembly.GetName().Name}.log").CreateLogger();
-      ThingThatDropsTheFiles thingThatDropsTheFiles = new ThingThatDropsTheFiles(GetSettings());
+      FileDropper thingThatDropsTheFiles = new FileDropper(GetSettings());
       thingThatDropsTheFiles.DropThemFilesLikeTheyreHawt();
     }
 

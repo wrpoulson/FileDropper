@@ -5,11 +5,11 @@ using Serilog;
 
 namespace FileDropper
 {
-  public class ThingThatDropsTheFiles
+  public class FileDropper
   {
     Settings _settings;
 
-    public ThingThatDropsTheFiles(Settings settings)
+    public FileDropper(Settings settings)
     {
       _settings = settings;
     }
@@ -18,6 +18,7 @@ namespace FileDropper
     {
       Random rng = new Random();
       var filesWritten = 0;
+      Console.WriteLine($" Starting creation of {_settings.NumberOfFilesToCreate} files");
 
       for (var i = 0; i < _settings.NumberOfFilesToCreate; i++)
       {
