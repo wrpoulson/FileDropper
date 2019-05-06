@@ -32,12 +32,11 @@ namespace FileDropper
 
         try
         {
-          using (var fs = new FileStream(fullFileName, FileMode.Create, FileAccess.Write, FileShare.None))
-          {
-            fs.Write(randomBytes, 0, randomBytes.Length);
-          }
+          new Thread(
+            () =>
+              CreateFile(fullFileName, randomBytes)
+          ).Start();
           filesWritten++;
-          Log.Information($"Created file: {fullFileName}");
         }
         catch (Exception ex)
         {
@@ -57,6 +56,15 @@ namespace FileDropper
 
       Console.WriteLine("\n Press 'q' to close application.\n");
       while (Console.Read() != 'q') ;
+    }
+
+    private void CreateFile(string fullFileName, byte[] randomBytes)
+    {
+      using (var fs = new FileStream(fullFileName, FileMode.Create, FileAccess.Write, FileShare.None))
+      {
+        fs.Write(randomBytes, 0, randomBytes.Length);
+      }
+      Log.Information($"Created file: {fullFileName}");
     }
 
     private string NotAllFilesWrittenMessage => "Not all files created successfully, please check log for file errors.";

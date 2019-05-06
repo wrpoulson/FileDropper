@@ -8,7 +8,7 @@ namespace FileDropper
   {
     public static string GetRandomFilename(Random rng, string fileNameBase, string lCode) => $"{fileNameBase}_{rng.Next()}_{lCode}.txt";
 
-    public static string GetRandomLCode(Random rng) => $"L{rng.Next(1, 500).ToString("D3")}";
+    public static string GetRandomLCode(Random rng) => $"L{rng.Next(1, 51).ToString("D3")}";
 
     public static byte[] GetRandomByteArray(Random rng, int maxFileSizeInKb)
     {
